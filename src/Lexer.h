@@ -30,6 +30,7 @@ public:
         lte,            // <=
         plus_plus,      // ++
         minus_minus,    // --
+        single_line_comment, // //
         start_comment,  // /*
         end_comment,    // */
         comma,          // ,
