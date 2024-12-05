@@ -23,21 +23,25 @@ namespace charinfo
 
     LLVM_READNONE inline bool isSpecialCharacter(char c)
     {
-        return c == '=' || c == '+' || c == '-' || c == '*' || c == '/' || c == '!' || c == '>' || c == '<' || c == '(' || c == ')' || c == '{' || c == '}'|| c == ',' || c == ';' || c == '%' || c == '^';
+        return c == '=' || c == '+' || c == '-' || c == '*' || c == '/' || c == '!' || c == '>' || c == '<' || c == '(' || c == ')' || c == '{' || c == '}' || c == ',' || c == ';' || c == '%' || c == '^';
     }
 }
 
-void Lexer::next(Token &token) {
-    while (*BufferPtr && charinfo::isWhitespace(*BufferPtr)) {
+void Lexer::next(Token &token)
+{
+    while (*BufferPtr && charinfo::isWhitespace(*BufferPtr))
+    {
         ++BufferPtr;
     }
     // make sure we didn't reach the end of input
-    if (!*BufferPtr) {
+    if (!*BufferPtr)
+    {
         token.Kind = Token::eoi;
         return;
     }
     // collect characters and check for keywords or ident
-    if (charinfo::isLetter(*BufferPtr)) {
+    if (charinfo::isLetter(*BufferPtr))
+    {
         const char *end = BufferPtr + 1;
         while (charinfo::isLetter(*end) || charinfo::isDigit(*end))
             ++end;
@@ -70,13 +74,18 @@ void Lexer::next(Token &token) {
         // generate the token
         formToken(token, end, kind);
         return;
-    } else if (charinfo::isDigit(*BufferPtr)) { // check for numbers
+    }
+    else if (charinfo::isDigit(*BufferPtr))
+    { // check for numbers
         const char *end = BufferPtr + 1;
         while (charinfo::isDigit(*end))
             ++end;
         formToken(token, end, Token::number);
         return;
-    } else if (charinfo::isSpecialCharacter(*BufferPtr)) {
+    }
+    
+    else if (charinfo::isSpecialCharacter(*BufferPtr))
+    {
         const char *endWithOneLetter = BufferPtr + 1;
         const char *endWithTwoLetter = BufferPtr + 2;
         const char *end;
@@ -84,136 +93,204 @@ void Lexer::next(Token &token) {
         llvm::StringRef NameWithTwoLetter(BufferPtr, endWithTwoLetter - BufferPtr);
         Token::TokenKind kind;
         bool isFound = false;
-        if (NameWithTwoLetter == "=="){
+        if (NameWithTwoLetter == "==")
+        {
             kind = Token::eq;
             isFound = true;
             end = endWithTwoLetter;
-        } else if (NameWithOneLetter == "=") {
+        }
+        else if (NameWithOneLetter == "=")
+        {
             kind = Token::assign;
             isFound = true;
             end = endWithOneLetter;
-        } else if (NameWithTwoLetter == "!="){
+        }
+        else if (NameWithTwoLetter == "!=")
+        {
             kind = Token::neq;
             isFound = true;
             end = endWithTwoLetter;
-        } else if (NameWithTwoLetter == "-("){
+        }
+        else if (NameWithTwoLetter == "-(")
+        {
             kind = Token::minus_paren;
             isFound = true;
             end = endWithTwoLetter;
-        }else if (NameWithTwoLetter == "+="){
+        }
+        else if (NameWithTwoLetter == "+=")
+        {
             kind = Token::plus_assign;
             isFound = true;
             end = endWithTwoLetter;
-        } else if (NameWithTwoLetter == "-="){
+        }
+        else if (NameWithTwoLetter == "-=")
+        {
             kind = Token::minus_assign;
             isFound = true;
             end = endWithTwoLetter;
-        } else if (NameWithTwoLetter == "*="){
+        }
+        else if (NameWithTwoLetter == "*=")
+        {
             kind = Token::star_assign;
             isFound = true;
             end = endWithTwoLetter;
-        } else if (NameWithTwoLetter == "*/"){
+        }
+        else if (NameWithTwoLetter == "*/")
+        {
             kind = Token::end_comment;
             isFound = true;
             end = endWithTwoLetter;
-        } else if (NameWithTwoLetter == "/="){
+        }
+        else if (NameWithTwoLetter == "/=")
+        {
             kind = Token::slash_assign;
             isFound = true;
             end = endWithTwoLetter;
-        } else if (NameWithTwoLetter == "/*"){
+        }
+        else if (NameWithTwoLetter == "//")
+        {
+            kind = Token::single_line_comment;
+            isFound = true;
+            end = endWithTwoLetter;
+        }
+        else if (NameWithTwoLetter == "/*")
+        {
             kind = Token::start_comment;
             isFound = true;
             end = endWithTwoLetter;
-        } else if (NameWithTwoLetter == ">="){
+        }
+        else if (NameWithTwoLetter == ">=")
+        {
             kind = Token::gte;
             isFound = true;
             end = endWithTwoLetter;
-        } else if (NameWithTwoLetter == "<="){
+        }
+        else if (NameWithTwoLetter == "<=")
+        {
             kind = Token::lte;
             isFound = true;
             end = endWithTwoLetter;
-        } else if (NameWithTwoLetter == "++"){
+        }
+        else if (NameWithTwoLetter == "++")
+        {
             kind = Token::plus_plus;
             isFound = true;
             end = endWithTwoLetter;
-        } else if (NameWithTwoLetter == "--"){
+        }
+        else if (NameWithTwoLetter == "--")
+        {
             kind = Token::minus_minus;
             isFound = true;
             end = endWithTwoLetter;
-        } else if (NameWithOneLetter == "+"){
+        }
+        else if (NameWithOneLetter == "+")
+        {
             kind = Token::plus;
             isFound = true;
             end = endWithOneLetter;
-        } else if (NameWithOneLetter == "-"){
+        }
+        else if (NameWithOneLetter == "-")
+        {
             kind = Token::minus;
             isFound = true;
             end = endWithOneLetter;
-        } else if (NameWithOneLetter == "*"){
+        }
+        else if (NameWithOneLetter == "*")
+        {
             kind = Token::star;
             isFound = true;
             end = endWithOneLetter;
-        } else if (NameWithOneLetter == "/"){
+        }
+        else if (NameWithOneLetter == "/")
+        {
             kind = Token::slash;
             isFound = true;
             end = endWithOneLetter;
-        } else if (NameWithOneLetter == "+"){
+        }
+        else if (NameWithOneLetter == "+")
+        {
             kind = Token::plus;
             isFound = true;
             end = endWithOneLetter;
-        } else if (NameWithOneLetter == ">"){
+        }
+        else if (NameWithOneLetter == ">")
+        {
             kind = Token::gt;
             isFound = true;
             end = endWithOneLetter;
-        } else if (NameWithOneLetter == "<"){
+        }
+        else if (NameWithOneLetter == "<")
+        {
             kind = Token::lt;
             isFound = true;
             end = endWithOneLetter;
-        } else if (NameWithOneLetter == "("){
+        }
+        else if (NameWithOneLetter == "(")
+        {
             kind = Token::l_paren;
             isFound = true;
             end = endWithOneLetter;
-        } else if (NameWithOneLetter == ")"){
+        }
+        else if (NameWithOneLetter == ")")
+        {
             kind = Token::r_paren;
             isFound = true;
             end = endWithOneLetter;
-        } else if (NameWithOneLetter == "{"){
+        }
+        else if (NameWithOneLetter == "{")
+        {
             kind = Token::l_brace;
             isFound = true;
             end = endWithOneLetter;
-        } else if (NameWithOneLetter == "}"){
+        }
+        else if (NameWithOneLetter == "}")
+        {
             kind = Token::r_brace;
             isFound = true;
             end = endWithOneLetter;
-        } else if (NameWithOneLetter == ";"){
+        }
+        else if (NameWithOneLetter == ";")
+        {
             kind = Token::semicolon;
             isFound = true;
             end = endWithOneLetter;
-        } else if (NameWithOneLetter == ","){
+        }
+        else if (NameWithOneLetter == ",")
+        {
             kind = Token::comma;
             isFound = true;
             end = endWithOneLetter;
-        } else if (NameWithOneLetter == "%"){
+        }
+        else if (NameWithOneLetter == "%")
+        {
             kind = Token::mod;
             isFound = true;
             end = endWithOneLetter;
-        } else if (NameWithOneLetter == "^"){
+        }
+        else if (NameWithOneLetter == "^")
+        {
             kind = Token::exp;
             isFound = true;
             end = endWithOneLetter;
         }
-        
+
         // generate the token
-        if (isFound) formToken(token, end, kind);
-        else formToken(token, BufferPtr + 1, Token::unknown);
+        if (isFound)
+            formToken(token, end, kind);
+        else
+            formToken(token, BufferPtr + 1, Token::unknown);
         return;
-    } else {
-        formToken(token, BufferPtr + 1, Token::unknown); 
-        return;         
+    }
+    else
+    {
+        formToken(token, BufferPtr + 1, Token::unknown);
+        return;
     }
     return;
 }
 
-void Lexer::setBufferPtr(const char *buffer){
+void Lexer::setBufferPtr(const char *buffer)
+{
     BufferPtr = buffer;
 }
 

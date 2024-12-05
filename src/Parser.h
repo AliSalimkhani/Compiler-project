@@ -57,6 +57,7 @@ class Parser
     ForStmt *parseFor();
     PrintStmt *parsePrint();
     void parseComment();
+    void parseSingleLineComment();
     llvm::SmallVector<AST *> getBody();
 
 public:
