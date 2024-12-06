@@ -47,6 +47,7 @@ public:
         l_brace,        // {
         r_brace,        // }
         KW_int,         // int
+        KW_float,       // float
         KW_bool,        // bool
         KW_true,        // true
         KW_false,       // false

@@ -150,30 +150,27 @@ public:
 
 
 // Final class represents a Final in the AST (either an identifier or a number or true or false)
-class Final : public Expr
-{
+class Final : public Expr {
 public:
-  enum ValueKind
-  {
-    Ident,
-    Number
-  };
+    enum ValueKind {
+        Ident,
+        Number,
+        Float // Add support for float values
+    };
 
 private:
-  ValueKind Kind;                            // Stores the kind of Final (identifier or number or true or false)
-  llvm::StringRef Val;                       // Stores the value of the Final
+    ValueKind Kind;
+    llvm::StringRef Val;
 
 public:
-  Final(ValueKind Kind, llvm::StringRef Val) : Kind(Kind), Val(Val) {}
+    Final(ValueKind Kind, llvm::StringRef Val) : Kind(Kind), Val(Val) {}
 
-  ValueKind getKind() { return Kind; }
+    ValueKind getKind() { return Kind; }
+    llvm::StringRef getVal() { return Val; }
 
-  llvm::StringRef getVal() { return Val; }
-
-  virtual void accept(ASTVisitor &V) override
-  {
-    V.visit(*this);
-  }
+    virtual void accept(ASTVisitor &V) override {
+        V.visit(*this);
+    }
 };
 
 // BinaryOp class represents a binary operation in the AST (plus, minus, multiplication, division)

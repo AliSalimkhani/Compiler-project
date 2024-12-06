@@ -382,6 +382,7 @@ Assignment *Parser::parseIntAssign()
     Expr *E = nullptr;
     Final *F = nullptr;
     Assignment::AssignKind AK;
+
     F = (Final *)(parseFinal());
     if (F == nullptr)
     {
@@ -412,8 +413,9 @@ Assignment *Parser::parseIntAssign()
     {
         goto _error;
     }
+
     advance();
-    E = parseExpr(); // check for mathematical expr
+    E = parseExpr(); // Check for mathematical expression
     if (E)
     {
         return new Assignment(F, E, AK, nullptr);
@@ -575,14 +577,20 @@ _error:
 Expr *Parser::parseFinal()
 {
     Expr *Res = nullptr;
+    if (Tok.is(Token::number))
+    {
+        llvm::StringRef Val = Tok.getText();
+        advance();
+        return new Final(Final::Number, Val);
+    }
+    else if (Tok.is(Token::KW_float)) // Handle floating-point literals
+    {
+        llvm::StringRef Val = Tok.getText();
+        advance();
+        return new Final(Final::Float, Val);
+    }
     switch (Tok.getKind())
     {
-    case Token::number:
-    {
-        Res = new Final(Final::Number, Tok.getText());
-        advance();
-        break;
-    }
     case Token::ident:
     {
         Res = new Final(Final::Ident, Tok.getText());

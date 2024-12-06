@@ -75,14 +75,32 @@ void Lexer::next(Token &token)
         formToken(token, end, kind);
         return;
     }
-    else if (charinfo::isDigit(*BufferPtr))
-    { // check for numbers
-        const char *end = BufferPtr + 1;
+else if (charinfo::isDigit(*BufferPtr) || (*BufferPtr == '.' && charinfo::isDigit(*(BufferPtr + 1))))
+{ 
+    // Check for numbers, including floating-point
+    const char *end = BufferPtr + 1;
+
+    bool isFloat = false;
+
+    while (charinfo::isDigit(*end)) // Consume integer part
+        ++end;
+
+    if (*end == '.' && charinfo::isDigit(*(end + 1))) // Consume fractional part
+    {
+        isFloat = true;
+        ++end; // Skip '.'
         while (charinfo::isDigit(*end))
             ++end;
-        formToken(token, end, Token::number);
-        return;
     }
+
+    if (isFloat)
+        formToken(token, end, Token::KW_float); // New token type for floats
+    else
+        formToken(token, end, Token::number);
+
+    return;
+}
+
     
     else if (charinfo::isSpecialCharacter(*BufferPtr))
     {
